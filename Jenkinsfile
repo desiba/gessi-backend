@@ -21,7 +21,7 @@ pipeline {
         }
         stage('deployment') {
             steps {
-               deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'admin', path: '', url: 'http://54.234.59.160:8081/')], contextPath: null, war: '**/*.war'
+               deploy adapters: [tomcat9(alternativeDeploymentContext: '', credentialsId: 'admin', path: '', url: 'http://54.242.56.96:8081/')], contextPath: null, war: '**/*.war'
             }
         }
         stage('Notification'){
