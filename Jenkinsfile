@@ -3,6 +3,11 @@ pipeline {
 	tools {
 		maven 'maven-3.9.10'
 	}
+
+    options {
+        skipDefaultCheckout true
+    }
+    
     stages {
         stage('Checkout Code') {
             steps {
