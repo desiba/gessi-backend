@@ -19,11 +19,6 @@
     	<project.reporting.outputEncoding>utf-8</project.reporting.outputEncoding>
   	</properties>
 
-	<modules>
-    	<module>server</module>
-    	<module>webapp</module>
-  	</modules>
-
 	<dependencies>
 	
 		<dependency>
@@ -164,6 +159,15 @@
 
 	<build>
 		<plugins>
+		
+		 <plugin>
+	        <artifactId>maven-compiler-plugin</artifactId>
+	        <configuration>
+	          <source>1.7</source>
+	          <target>1.7</target>
+	        </configuration>
+	      </plugin>
+	      
 			<plugin>
                    <groupId>org.apache.maven.plugins</groupId>
                    <artifactId>maven-war-plugin</artifactId>
