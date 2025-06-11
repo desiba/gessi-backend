@@ -44,11 +44,11 @@ public class CartEntity {
 
     private double subTotal;
 
-    private double taxes = 0.0;
+    private double taxes;
 
-    private double vats = 0.0;
+    private double vats;
 
-    private double discount = 0.0;
+    private double discount;
     
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
