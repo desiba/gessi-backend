@@ -23,7 +23,8 @@ public class SecurityConfiguration {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/swagger-resources/**",
-            "/swagger-resources"
+            "/swagger-resources",
+            "/actuator/**"
     };
     
     private final AuthenticationProvider authenticationProvider;
@@ -48,6 +49,7 @@ public class SecurityConfiguration {
                         		.requestMatchers("/api/v1/owner/*").hasRole(UserRole.ADMIN.getRole())
                         		
                         		.requestMatchers("/api/v1/products/*").permitAll()
+
                         		
                         		.requestMatchers("/api/v1/helper/*").permitAll()  
                         		
