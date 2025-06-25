@@ -2,13 +2,14 @@ package com.desmond.gadgetstore.services;
 
 import com.desmond.gadgetstore.entities.UserEntity;
 import com.desmond.gadgetstore.payload.request.UpdateUser;
+import com.desmond.gadgetstore.payload.response.UserResponse;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface UserService {
-    UserEntity update(UpdateUser request);
+    UserResponse update(UUID id, UpdateUser request);
 
     UserEntity loggedIn();
 

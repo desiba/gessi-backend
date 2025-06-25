@@ -2,6 +2,10 @@ package com.desmond.gadgetstore.controllers;
 
 import com.desmond.gadgetstore.entities.UserEntity;
 import com.desmond.gadgetstore.services.UserService;
+import com.desmond.gadgetstore.payload.request.UpdateUser;
+import com.desmond.gadgetstore.payload.response.ApiResponse;
+import com.desmond.gadgetstore.payload.response.ResponseUtil;
+import com.desmond.gadgetstore.payload.response.UserResponse;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
@@ -39,5 +43,14 @@ public class UserController {
     ){
         Optional<UserEntity> user = userService.findById(userId);
         return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+    
+    @PutMapping("{id}")
+    public ResponseEntity<ApiResponse<UserResponse>> update(
+    		@Parameter(description = "user id", required = true) @Valid @PathVariable("id") UUID id,
+    		@Valid @RequestBody UpdateUser request
+    		){
+    	UserResponse updatedUser = userService.update(id, request);
+    	return ResponseEntity.ok(ResponseUtil.success("User successfully updated", updatedUser, null));
     }
 }

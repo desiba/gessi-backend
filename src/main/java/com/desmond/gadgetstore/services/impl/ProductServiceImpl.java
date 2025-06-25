@@ -10,6 +10,8 @@ import com.desmond.gadgetstore.entities.CategoryEntity;
 import com.desmond.gadgetstore.entities.PricingEntity;
 import com.desmond.gadgetstore.entities.ProductEntity;
 import com.desmond.gadgetstore.entities.ProductImageEntity;
+import com.desmond.gadgetstore.entities.SectionEntity;
+import com.desmond.gadgetstore.entities.SectionProductEntity;
 import com.desmond.gadgetstore.exceptions.ResourceNotFoundException;
 import com.desmond.gadgetstore.payload.request.ProductCreateRequest;
 import com.desmond.gadgetstore.payload.request.ProductUpdateRequest;
@@ -18,6 +20,7 @@ import com.desmond.gadgetstore.repositories.BrandRepository;
 import com.desmond.gadgetstore.repositories.CategoryRepository;
 import com.desmond.gadgetstore.repositories.ProductImageRepository;
 import com.desmond.gadgetstore.repositories.ProductRepository;
+import com.desmond.gadgetstore.repositories.SectionProductRepository;
 import com.desmond.gadgetstore.repositories.specifications.ProductSpecification;
 import com.desmond.gadgetstore.services.BrandService;
 import com.desmond.gadgetstore.services.CategoryService;
@@ -53,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final BrandRepository brandRepository;
     private final CategoryRepository categoryRepository;
-
+    private final SectionProductRepository sectionProductRepository;
     private final CategoryService categoryService;
     private final S3Service s3Service;
     private final ProductImageRepository productImageRepository;

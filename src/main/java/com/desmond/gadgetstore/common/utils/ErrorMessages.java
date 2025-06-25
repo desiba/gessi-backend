@@ -9,5 +9,6 @@ public class ErrorMessages {
     public static final String ERROR_BRAND_NOT_FOUND = "Brand does not exist";
     public static final String ERROR_CATEGORY_NOT_FOUND = "Category does not exist";
     public static final String ERROR_SECTION_NOT_FOUND = "Section does not exist";
+    public static final String ERROR_PRODUCT_ALREADY_EXIST_IN_SECTION = "Product already added to section";
 
 }

@@ -18,4 +18,6 @@ public interface BrandService {
     List<BrandResponse> findAll();
 
     BrandResponse update();
+    
+    
 }

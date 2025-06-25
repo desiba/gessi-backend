@@ -29,16 +29,6 @@ public class GlobalExceptionHandler {
                 ex.getMessage()));
     }
 
-    /*
-    //Custom exception handler for SupplierAlreadyExistsException
-    @ExceptionHandler(value=SupplierAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleSupplierAlreadyExistsException(SupplierAlreadyExistsException ex){
-        log.error(HttpStatus.CONFLICT + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(HttpStatus.CONFLICT.value(),
-                ex.getMessage()));
-    }
-    */
-    //Check validations if you add validation rules on DTO class
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<String> errorMessages = ex.getBindingResult().getFieldErrors()
@@ -83,15 +73,6 @@ public class GlobalExceptionHandler {
                 ex.getMessage()));
     }
 
-    //When given invalid values to request body
-    /*
-    @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        log.error(HttpStatus.BAD_REQUEST+ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(HttpStatus.BAD_REQUEST.value(),
-                ex.getMessage()));
-    }
-    */
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<ErrorResponse> handleNoHandlerFoundException(NoHandlerFoundException ex) {
         log.error(HttpStatus.NOT_FOUND + ex.getRequestURL());

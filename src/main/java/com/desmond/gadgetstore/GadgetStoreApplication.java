@@ -16,5 +16,4 @@ public class GadgetStoreApplication extends SpringBootServletInitializer {
         return builder.sources(GadgetStoreApplication.class);
     }
 
-
 }

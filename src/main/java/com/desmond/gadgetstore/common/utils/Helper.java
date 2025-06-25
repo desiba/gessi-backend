@@ -3,11 +3,7 @@ package com.desmond.gadgetstore.common.utils;
 import java.util.Random;
 
 public final class Helper {
-    private Helper() {
-    }
-
-    ;
-
+    
     public static String generateProductCode(String brandName, String categoryName, long count) {
         String first = brandName.substring(0, 1).toUpperCase();
         String sec = categoryName.substring(0, 1).toUpperCase();

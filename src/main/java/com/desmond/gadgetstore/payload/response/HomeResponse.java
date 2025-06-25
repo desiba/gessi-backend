@@ -2,6 +2,7 @@ package com.desmond.gadgetstore.payload.response;
 
 import java.util.List;
 
+import com.desmond.gadgetstore.entities.BrandEntity;
 import com.desmond.gadgetstore.entities.SectionEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -22,6 +23,8 @@ public class HomeResponse {
     private List<CategoryResponse> categories;
     @JsonProperty("sections")
     private List<SectionEntity> sections;
+    @JsonProperty("brands")
+    private List<BrandResponse> brands;
     @JsonProperty("user")
     private UserResponse user;
     @JsonProperty("notificationCount")

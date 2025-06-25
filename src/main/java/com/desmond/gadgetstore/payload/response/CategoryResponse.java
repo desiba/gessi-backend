@@ -22,4 +22,6 @@ public class CategoryResponse {
     private String name;
 	@JsonProperty("image")
     private String image;
+    private int productCount;
+	
 }

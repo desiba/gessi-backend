@@ -3,6 +3,7 @@ package com.desmond.gadgetstore.services;
 import com.desmond.gadgetstore.dtos.ProductListDto;
 import com.desmond.gadgetstore.entities.ProductEntity;
 import com.desmond.gadgetstore.entities.ProductImageEntity;
+import com.desmond.gadgetstore.entities.SectionEntity;
 import com.desmond.gadgetstore.payload.request.ProductCreateRequest;
 import com.desmond.gadgetstore.payload.request.ProductUpdateRequest;
 
@@ -24,5 +25,6 @@ public interface ProductService {
 
     Page<ProductEntity> findProducts(ProductListDto filter);
 
-    ProductImageEntity saveProductImage(MultipartFile file);
+    ProductImageEntity saveProductImage(MultipartFile file);    
+
 }

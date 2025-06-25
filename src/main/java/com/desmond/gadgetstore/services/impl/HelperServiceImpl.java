@@ -10,12 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.desmond.gadgetstore.common.utils.ErrorMessages;
+import com.desmond.gadgetstore.common.utils.S3Service;
 import com.desmond.gadgetstore.entities.BannerEntity;
+import com.desmond.gadgetstore.entities.BrandEntity;
 import com.desmond.gadgetstore.entities.CategoryEntity;
 import com.desmond.gadgetstore.entities.SectionEntity;
 import com.desmond.gadgetstore.entities.SectionProductEntity;
+import com.desmond.gadgetstore.exceptions.ConstraintViolationException;
 import com.desmond.gadgetstore.exceptions.ResourceNotFoundException;
-import com.desmond.gadgetstore.mapper.SectionMapper;
+//import com.desmond.gadgetstore.mapper.SectionMapper;
 import com.desmond.gadgetstore.payload.request.BannerRequest;
 import com.desmond.gadgetstore.payload.request.CreateSectionRequest;
 import com.desmond.gadgetstore.payload.response.BannerResponse;
@@ -25,46 +28,34 @@ import com.desmond.gadgetstore.payload.response.ProductResponse;
 import com.desmond.gadgetstore.payload.response.SectionResponse;
 import com.desmond.gadgetstore.payload.response.UserResponse;
 import com.desmond.gadgetstore.repositories.BannerRepository;
+import com.desmond.gadgetstore.repositories.BrandRepository;
 import com.desmond.gadgetstore.repositories.CategoryRepository;
+import com.desmond.gadgetstore.repositories.ProductImageRepository;
+import com.desmond.gadgetstore.repositories.ProductRepository;
 import com.desmond.gadgetstore.repositories.SectionProductRepository;
 import com.desmond.gadgetstore.repositories.SectionRepository;
+import com.desmond.gadgetstore.services.BrandService;
 import com.desmond.gadgetstore.services.CategoryService;
 import com.desmond.gadgetstore.services.HelperService;
 import com.desmond.gadgetstore.services.ProductService;
 import com.desmond.gadgetstore.services.UserService;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class HelperServiceImpl implements HelperService {
 	private final BannerRepository bannerRepository;
 	private final ProductService productService;
 	private final CategoryService categoryService;
 	private final SectionRepository sectionRepository;
 	private final SectionProductRepository sectionProductRepository;
-    private final SectionMapper sectionMapper;
+ 
     private final CategoryRepository categoryRepository;
     private final UserService userService;
-    
-
-	public HelperServiceImpl(
-			BannerRepository bannerRepository,
-			ProductService productService,
-			CategoryService categoryService,
-			SectionRepository sectionRepository,
-			SectionMapper sectionMapper,
-			SectionProductRepository sectionProductRepository,
-			CategoryRepository categoryRepository,
-			UserService userService
-			) {
-        this.bannerRepository = bannerRepository;
-        this.productService = productService;
-        this.categoryService = categoryService;
-        this.sectionRepository = sectionRepository;
-        this.sectionMapper = sectionMapper;
-        this.sectionProductRepository = sectionProductRepository;
-        this.categoryRepository = categoryRepository;
-        this.userService = userService;
-    }
-
+    private final BrandService brandService;
 
 	@Override
 	public List<BannerResponse> getBanners() {
@@ -107,14 +98,18 @@ public class HelperServiceImpl implements HelperService {
 
 	@Override
 	public void addProductToSection(UUID sectionId, UUID productId) {
-		findSectionById(sectionId);
+		boolean isProductExist = this.checkProductExistInSection(sectionId, productId);
+		
+		if(isProductExist) {
+			 throw new ConstraintViolationException(ErrorMessages.ERROR_PRODUCT_ALREADY_EXIST_IN_SECTION);
+		}
+		
 		var product = productService.findById(productId);
 		 
 		var toCreateSection = SectionProductEntity.builder()
-		.sectionId(sectionId)
-		.product(product)
-		.build();
-		System.out.println(toCreateSection);
+			.sectionId(sectionId)
+			.product(product)
+			.build();
 		sectionProductRepository.save(toCreateSection);
 	}
 
@@ -128,10 +123,8 @@ public class HelperServiceImpl implements HelperService {
 
 	@Override
 	public void deleteSectionById(UUID id) {
-		// TODO Not completed
 		sectionRepository.deleteById(id);
 	}
-
 
 	@Override
 	public void createSection(CreateSectionRequest request) {
@@ -142,6 +135,14 @@ public class HelperServiceImpl implements HelperService {
 		sectionRepository.save(section);
 	}
 	
+	private boolean checkProductExistInSection(UUID sectionId, UUID productId) {
+		SectionEntity section = findSectionById(sectionId);
+		Optional<SectionProductEntity> sectionProduct = section.getProducts().stream().filter(p -> p.getProduct().getId().equals(productId))
+		.findFirst();
+				
+		return sectionProduct.get().getProduct() != null ?  true : false;
+	}
+	
 	private SectionEntity findSectionById(UUID sectionId) {
 		var section = sectionRepository.findById(sectionId);
 		if (section.isEmpty()) {
@@ -149,6 +150,9 @@ public class HelperServiceImpl implements HelperService {
 		}
 		return section.get();
 	}
+	
+	
+	
 	
 	private List<CategoryResponse> categories (){
 		List<CategoryResponse> categoryResponses = new ArrayList<>();
@@ -158,6 +162,7 @@ public class HelperServiceImpl implements HelperService {
 					.id(res.getId())
 					.name(res.getName())
 					.image(res.getImage())
+					.productCount(0)
 					.build();
 			categoryResponses.add(catResponse);
 		}
@@ -166,7 +171,7 @@ public class HelperServiceImpl implements HelperService {
 
 	@Override
 	public HomeResponse getHomeResponse() {
-		//var user = userService.loggedIn();
+		
 		UserResponse userResponse = UserResponse.builder()
 				.id(UUID.randomUUID())
 				.firstName("John")
@@ -197,9 +202,13 @@ public class HelperServiceImpl implements HelperService {
 				.banners(getBanners())
 				.categories(categories())
 				.sections(getSections())
+				.brands(brandService.findAll())
 				.notificationCount(5)
 				.user(userResponse)
 				.build();
 	}
+
+
+	
 
 }

@@ -49,6 +49,8 @@ public class BrandServiceImpl implements BrandService {
     public boolean isExist(UUID id) {
         return brandRepository.existsById(id);
     }
+    
+    
 
     @Override
     public List<BrandResponse> findAll() {

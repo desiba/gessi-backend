@@ -1,7 +1,7 @@
 package com.desmond.gadgetstore.entities;
 
 import java.util.Date;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,7 +9,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.desmond.gadgetstore.common.utils.SectionType;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,11 +35,8 @@ public class SectionEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 	
-	 @OneToMany(
-	    		fetch = FetchType.EAGER,
-	    		cascade = CascadeType.PERSIST,
-	    		orphanRemoval = true)
-	 private Set<SectionProductEntity> products;
+	 @OneToMany(fetch = FetchType.LAZY, mappedBy = "sectionId")
+	 private List<SectionProductEntity> products;
 	 
 	 private String title;
 	 private SectionType type;

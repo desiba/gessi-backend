@@ -3,6 +3,7 @@ package com.desmond.gadgetstore.payload.request;
 import lombok.Data;
 
 @Data
-public class UpdateUser extends CreateUser {
-    private String userId;
+public class UpdateUser {
+    private String firstName;
+    private String lastName;
 }

@@ -1,7 +1,9 @@
 package com.desmond.gadgetstore.payload.response;
 
-import com.desmond.gadgetstore.entities.UserEntity;
+import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,12 +13,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthResponse {
-
-    @JsonProperty("token")
-    private String token;
-    @JsonProperty("refreshToken")
-    private String refreshToken;
-    @JsonProperty("user")
-    private UserEntity user;
+public class RefreshTokenResponse {
+	private String accessToken;
+	private String refreshToken;
+	private String tokenType = "Bearer";
 }

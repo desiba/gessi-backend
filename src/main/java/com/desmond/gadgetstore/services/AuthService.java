@@ -5,12 +5,14 @@ import com.desmond.gadgetstore.payload.request.AuthenticateEmailRequest;
 import com.desmond.gadgetstore.payload.request.CreateUser;
 import com.desmond.gadgetstore.payload.request.LoginRequest;
 import com.desmond.gadgetstore.payload.response.AuthResponse;
+import com.desmond.gadgetstore.payload.response.UserResponse;
+
 import org.springframework.security.core.userdetails.UserDetails;
 
 public interface AuthService extends UserDetails {
-    UserEntity register(CreateUser createUser);
+    UserResponse register(CreateUser createUser);
 
     AuthResponse login(LoginRequest loginRequest);
 
-    UserEntity validateEmail(AuthenticateEmailRequest request);
+    UserResponse validateEmail(AuthenticateEmailRequest request);
 }
