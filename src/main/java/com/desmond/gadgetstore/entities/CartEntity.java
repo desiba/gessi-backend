@@ -31,11 +31,8 @@ public class CartEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     
-    @OneToMany(
-    		fetch = FetchType.LAZY,
-    		cascade = CascadeType.PERSIST,
-    		orphanRemoval = true)
-    private Set<CartItemEntity> items;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cartId")
+    private List<CartItemEntity> items;
 
     @OneToOne
     private UserEntity user;

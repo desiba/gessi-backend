@@ -1,4 +1,4 @@
-package com.desmond.gadgetstore.services.impl;
+package com.desmond.gadgetstore.jwt;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.desmond.gadgetstore.entities.UserEntity;
 import com.desmond.gadgetstore.repositories.UserRepository;
+import com.desmond.gadgetstore.services.impl.UserDetailsImpl;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		 
 	    UserEntity user = userRepository.findByEmail(email)
 	        .orElseThrow(() -> new UsernameNotFoundException("User Not Found with email: " + email));
-	    
 	    return UserDetailsImpl.build(user);
 	 }
 

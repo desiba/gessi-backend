@@ -14,10 +14,13 @@ import com.desmond.gadgetstore.common.utils.S3Service;
 import com.desmond.gadgetstore.entities.BannerEntity;
 import com.desmond.gadgetstore.entities.BrandEntity;
 import com.desmond.gadgetstore.entities.CategoryEntity;
+import com.desmond.gadgetstore.entities.ProductEntity;
 import com.desmond.gadgetstore.entities.SectionEntity;
 import com.desmond.gadgetstore.entities.SectionProductEntity;
+import com.desmond.gadgetstore.entities.UserEntity;
 import com.desmond.gadgetstore.exceptions.ConstraintViolationException;
 import com.desmond.gadgetstore.exceptions.ResourceNotFoundException;
+import com.desmond.gadgetstore.payload.request.AddProductToSectionRequest;
 //import com.desmond.gadgetstore.mapper.SectionMapper;
 import com.desmond.gadgetstore.payload.request.BannerRequest;
 import com.desmond.gadgetstore.payload.request.CreateSectionRequest;
@@ -48,13 +51,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class HelperServiceImpl implements HelperService {
 	private final BannerRepository bannerRepository;
+	
 	private final ProductService productService;
 	private final CategoryService categoryService;
 	private final SectionRepository sectionRepository;
 	private final SectionProductRepository sectionProductRepository;
- 
+	private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final UserService userService;
     private final BrandService brandService;
 
 	@Override
@@ -95,22 +98,12 @@ public class HelperServiceImpl implements HelperService {
 		return sectionRepository.findAll();
 	}
 
-
 	@Override
-	public void addProductToSection(UUID sectionId, UUID productId) {
-		boolean isProductExist = this.checkProductExistInSection(sectionId, productId);
-		
-		if(isProductExist) {
-			 throw new ConstraintViolationException(ErrorMessages.ERROR_PRODUCT_ALREADY_EXIST_IN_SECTION);
-		}
-		
-		var product = productService.findById(productId);
-		 
-		var toCreateSection = SectionProductEntity.builder()
-			.sectionId(sectionId)
-			.product(product)
-			.build();
-		sectionProductRepository.save(toCreateSection);
+	public void addProductToSection(AddProductToSectionRequest request) {
+		findSectionById(request.getSectionId());
+		var product = productService.findById(request.getProductId());
+		product.setSectionId(request.getSectionId());
+		productRepository.save(product);
 	}
 
 
@@ -135,14 +128,6 @@ public class HelperServiceImpl implements HelperService {
 		sectionRepository.save(section);
 	}
 	
-	private boolean checkProductExistInSection(UUID sectionId, UUID productId) {
-		SectionEntity section = findSectionById(sectionId);
-		Optional<SectionProductEntity> sectionProduct = section.getProducts().stream().filter(p -> p.getProduct().getId().equals(productId))
-		.findFirst();
-				
-		return sectionProduct.get().getProduct() != null ?  true : false;
-	}
-	
 	private SectionEntity findSectionById(UUID sectionId) {
 		var section = sectionRepository.findById(sectionId);
 		if (section.isEmpty()) {
@@ -150,9 +135,6 @@ public class HelperServiceImpl implements HelperService {
 		}
 		return section.get();
 	}
-	
-	
-	
 	
 	private List<CategoryResponse> categories (){
 		List<CategoryResponse> categoryResponses = new ArrayList<>();
@@ -171,33 +153,15 @@ public class HelperServiceImpl implements HelperService {
 
 	@Override
 	public HomeResponse getHomeResponse() {
-		
+				
 		UserResponse userResponse = UserResponse.builder()
-				.id(UUID.randomUUID())
-				.firstName("John")
-				.lastName("Doe")
-				.isActive(false)
-				.isEmailValid(false)
-				.build();;
-		/*
-		if(user != null) {
-			userResponse = UserResponse.builder()
-					.id(user.getId())
-					.firstName(user.getFirstName())
-					.lastName(user.getLastName())
-					.isActive(user.isActive())
-					.isEmailValid(user.isEmailValid())
-					.build();
-		}else {
-			userResponse = UserResponse.builder()
 					.id(UUID.randomUUID())
 					.firstName("John")
 					.lastName("Doe")
 					.isActive(false)
 					.isEmailValid(false)
-					.build();
-		}
-		*/
+					.build();;
+		
 		return HomeResponse.builder()
 				.banners(getBanners())
 				.categories(categories())

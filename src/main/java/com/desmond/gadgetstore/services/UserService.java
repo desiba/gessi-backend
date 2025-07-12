@@ -18,4 +18,6 @@ public interface UserService {
     List<UserEntity> findMany();
 
     Optional<UserEntity> findById(UUID userId);
+    
+    UserEntity getUserLoggedInfo();
 }

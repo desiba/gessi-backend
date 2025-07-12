@@ -62,5 +62,15 @@ public class UserServiceImpl implements UserService {
     public Optional<UserEntity> findById(UUID userId) {
         return userRepository.findById(userId);
     }
+    
+    public UserEntity getUserLoggedInfo() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		
+    	SecurityContextHolder.getContext().setAuthentication(authentication);
+    	
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        
+        return userRepository.findById(userDetails.getId()).get();
+	}
 
 }

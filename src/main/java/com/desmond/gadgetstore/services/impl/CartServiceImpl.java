@@ -4,6 +4,7 @@ import com.desmond.gadgetstore.entities.CartEntity;
 import com.desmond.gadgetstore.entities.CartItemEntity;
 import com.desmond.gadgetstore.entities.ProductEntity;
 import com.desmond.gadgetstore.entities.UserEntity;
+import com.desmond.gadgetstore.exceptions.ConstraintViolationException;
 import com.desmond.gadgetstore.exceptions.ResourceNotFoundException;
 import com.desmond.gadgetstore.payload.request.AddCartItemRequest;
 import com.desmond.gadgetstore.repositories.CartItemRepository;
@@ -34,89 +35,83 @@ public class CartServiceImpl implements CartService {
     /*
      * 
      * @DeleteMapping
-public ResponseEntity deleteAsset(@RequestHeader("Name-Content") String name) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Optional<ClientModel> client = repository.findByEmail(authentication.getPrincipal().toString());
- 
-    if (client.isEmpty())
-        return ResponseMessages.Client_FindByLogin_Null;
- 
-    //Permission Check
-    if(!PermissionManager.permissionCheck("asset-delete", client.get()))
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Você não tem permissão para executar essa ação.");
- 
-    Optional<Asset> optional = getAssetByName(client.get(), name);
-    if (optional.isPresent()) {
-        Asset asset = optional.get();
-        try {
-            Optional<Organization> organizationOptional = organizationRepository.findByName(client.get().getOrganization().getName());
-            if(organizationOptional.isPresent()) {
-                Organization organization = organizationOptional.get();
- 
-                asset.setOrganization(null);
-                assetRepository.saveAndFlush(asset);
-            }
-        } catch (Exception e) {
-            BrasensRest.printNicerStackTrace(e);
-        }
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
-    }
- 
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-}
+		public ResponseEntity deleteAsset(@RequestHeader("Name-Content") String name) {
+		    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		    Optional<ClientModel> client = repository.findByEmail(authentication.getPrincipal().toString());
+		 
+		    if (client.isEmpty())
+		        return ResponseMessages.Client_FindByLogin_Null;
+		 
+		    //Permission Check
+		    if(!PermissionManager.permissionCheck("asset-delete", client.get()))
+		        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Você não tem permissão para executar essa ação.");
+		 
+		    Optional<Asset> optional = getAssetByName(client.get(), name);
+		    if (optional.isPresent()) {
+		        Asset asset = optional.get();
+		        try {
+		            Optional<Organization> organizationOptional = organizationRepository.findByName(client.get().getOrganization().getName());
+		            if(organizationOptional.isPresent()) {
+		                Organization organization = organizationOptional.get();
+		 
+		                asset.setOrganization(null);
+		                assetRepository.saveAndFlush(asset);
+		            }
+		        } catch (Exception e) {
+		            BrasensRest.printNicerStackTrace(e);
+		        }
+		        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+		    }
+		 
+		    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
      */
 
     @Override
     public CartEntity add(AddCartItemRequest request) {
-    	List<CartItemEntity> cartItems = new ArrayList<>();
         ProductEntity product = productService.findById(request.getProductId());
-    	CartEntity cart = findUserCart();
-    	
-    	if(cart == null) {
-    		cart = CartEntity.builder()
-        			.user(userService.loggedIn())
-        			.items(new HashSet<>())
-        			.build();
-    	}
-    	
-    	cartItems.addAll(cart.getItems());
-    	
-    	CartItemEntity cartItem = CartItemEntity.builder()
-    			.product(product)
-    			.quantity(request.getQuantity())
-    			.build();
-    	
-    	cartItems.add(cartItem);
-    	
-    	cart.getItems().addAll(cartItems);
-    	
-        return cartRepository.save(cart);
+        CartEntity cart = create();
+        
+        CartItemEntity cartItem = null;
+        
+        Optional<CartItemEntity> cartItemExist = cart.getItems()
+    			.stream()
+    			.filter(item -> item.getProduct().getId().equals(request.getProductId()))
+    			.findAny();
+        
+        if(cartItemExist.isPresent()) {
+        	 cartItem = cartItemExist.get();
+        	 cartItem.setQuantity(Math.addExact(cartItem.getQuantity(), 1));
+        } else {
+        	  cartItem = CartItemEntity.builder()
+     				.cartId(cart.getId())
+         			.product(product)
+         			.quantity(request.getQuantity())
+         			.build();
+        }
+        
+        cartItemRepository.save(cartItem);
+        return cartRepository.findByUserId(cart.getUser().getId());
     }
 
     @Override
     public CartEntity findUserCart() {
-        UserEntity user = userService.loggedIn();
+        UserEntity user = userService.getUserLoggedInfo();
+        
         return cartRepository.findByUserId(user.getId());
     }
 
     @Override
-    public void removeItem(UUID itemId) {
+    public CartEntity removeItem(UUID itemId) {
     	CartEntity cart = findUserCart();
     	
-    	Optional<CartItemEntity> cartItem = cartItemRepository.findById(itemId);
+    	Optional<CartItemEntity> cartItem = cartItemRepository.findByIdAndCartId(itemId, cart.getId());
     	    	
     	if(cartItem.isEmpty()) throw new ResourceNotFoundException("cart item not found");
     	
-    	boolean isExist = cart.getItems()
-    			.stream()
-    			.filter(item -> item.getId() == cartItem.get().getId())
-    			.findAny()
-    			.isPresent();
+    	cartItemRepository.delete(cartItem.get());
     	
-    	if(!isExist) throw new ResourceNotFoundException("item not found in cart items");
-    	
-    	// NOT WORKING YET
-        cartItemRepository.delete(cartItem.get());
+        return cartRepository.findByUserId(cart.getUser().getId());
     }
 
     @Override
@@ -125,10 +120,21 @@ public ResponseEntity deleteAsset(@RequestHeader("Name-Content") String name) {
     	cartRepository.delete(cart);
     }
     
+    private CartEntity create() {
+    	CartEntity cart = findUserCart();
+    	UserEntity user = userService.getUserLoggedInfo();
+    	if(cart == null) {
+    		cart = CartEntity.builder().user(user).build();
+    		cartRepository.save(cart);
+    		cart = cartRepository.findByUserId(user.getId());
+    	}
+    	return cart;
+    }
+    
     private double calculatePrice(List<CartItemEntity> items) {
     	double totalPrice = 0;
         for (CartItemEntity item : items) {
-            //totalPrice += item.ge;	
+            	
         }
         return totalPrice;
     }

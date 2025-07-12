@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.desmond.gadgetstore.entities.BrandEntity;
 import com.desmond.gadgetstore.entities.SectionEntity;
+import com.desmond.gadgetstore.entities.SectionProductEntity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;

@@ -22,6 +22,8 @@ public class ProductImageEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    private UUID productId;
+    
     private String url;
     private String name;
     private String description;

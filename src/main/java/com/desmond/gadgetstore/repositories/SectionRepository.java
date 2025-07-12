@@ -10,5 +10,5 @@ import com.desmond.gadgetstore.entities.SectionEntity;
 
 @Repository
 public interface SectionRepository extends JpaRepository<SectionEntity, UUID> {
-
+	
 }

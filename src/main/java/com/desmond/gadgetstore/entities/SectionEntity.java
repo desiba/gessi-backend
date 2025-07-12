@@ -32,14 +32,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SectionEntity {
 	@Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-	
-	 @OneToMany(fetch = FetchType.LAZY, mappedBy = "sectionId")
-	 private List<SectionProductEntity> products;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private UUID id;
+		
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sectionId")
+	private List<ProductEntity> products;
 	 
-	 private String title;
-	 private SectionType type;
+	private String title;
+	private SectionType type;
 	 
 	@UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)

@@ -10,7 +10,7 @@ public interface CartService {
 
     CartEntity findUserCart();
 
-    void removeItem(UUID itemId);
+    CartEntity removeItem(UUID itemId);
 
     void clear();
 

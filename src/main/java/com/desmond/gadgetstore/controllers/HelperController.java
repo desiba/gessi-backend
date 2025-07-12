@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.desmond.gadgetstore.entities.BrandEntity;
 import com.desmond.gadgetstore.entities.SectionEntity;
+import com.desmond.gadgetstore.entities.SectionProductEntity;
+import com.desmond.gadgetstore.payload.request.AddProductToSectionRequest;
 import com.desmond.gadgetstore.payload.request.BannerRequest;
 import com.desmond.gadgetstore.payload.request.CreateSectionRequest;
 import com.desmond.gadgetstore.payload.response.HomeResponse;
@@ -52,12 +54,12 @@ public class HelperController {
 	 }
 	 
 	 
-	 @PutMapping("sections/{sectionId}/product/{productId}")
-     public ResponseEntity<BrandEntity> addProduct(
-     		@Parameter(description = "section id", required = true) @Valid @PathVariable("sectionId") UUID sectionId,
-     		@Parameter(description = "product id", required = true) @Valid @PathVariable("productId") UUID productId
+	 @PutMapping("sections")
+     public ResponseEntity<BrandEntity> addProductToSection(
+     		@Valid
+     		@RequestBody AddProductToSectionRequest request
     		 ) {
-        helperService.addProductToSection(sectionId, productId);
+        helperService.addProductToSection(request);
         return new ResponseEntity<>(HttpStatus.OK);
      }
 	 

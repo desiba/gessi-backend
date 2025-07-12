@@ -9,7 +9,10 @@ import com.desmond.gadgetstore.payload.response.UserResponse;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -21,14 +24,12 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
     
     private final UserService userService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping()
     public ResponseEntity<List<UserEntity>> findAll(
             @AuthenticationPrincipal UserDetails userDetails
@@ -52,5 +53,13 @@ public class UserController {
     		){
     	UserResponse updatedUser = userService.update(id, request);
     	return ResponseEntity.ok(ResponseUtil.success("User successfully updated", updatedUser, null));
+    }
+    
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("user-info")
+    public ResponseEntity<ApiResponse<UserEntity>> userLoggedInfo() {
+        UserEntity user = userService.getUserLoggedInfo();
+    	return ResponseEntity.ok(ResponseUtil.success("User successfully logged in", user, null));
+
     }
 }

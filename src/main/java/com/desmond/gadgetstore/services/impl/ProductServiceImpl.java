@@ -128,9 +128,8 @@ public class ProductServiceImpl implements ProductService {
     public ProductEntity findById(UUID productId) {
         Optional<ProductEntity> product = productRepository.findById(productId);
         
-        if (product.isEmpty()) {
-            throw new ResourceNotFoundException("Product not found");
-        }
+        if (product.isEmpty()) throw new ResourceNotFoundException("Product not found");
+        
         return product.get();
     }
 

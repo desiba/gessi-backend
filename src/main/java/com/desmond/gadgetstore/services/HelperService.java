@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import com.desmond.gadgetstore.entities.BrandEntity;
 import com.desmond.gadgetstore.entities.SectionEntity;
+import com.desmond.gadgetstore.entities.SectionProductEntity;
+import com.desmond.gadgetstore.payload.request.AddProductToSectionRequest;
 import com.desmond.gadgetstore.payload.request.BannerRequest;
 import com.desmond.gadgetstore.payload.request.CreateSectionRequest;
 import com.desmond.gadgetstore.payload.response.BannerResponse;
@@ -19,7 +21,7 @@ public interface HelperService {
 	
 	List<SectionEntity> getSections();
 		
-	void addProductToSection(UUID sectionId, UUID productId);
+	void addProductToSection(AddProductToSectionRequest request);
 		
 	void createSection(CreateSectionRequest request);
 	

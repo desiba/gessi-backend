@@ -1,39 +1,40 @@
 package com.desmond.gadgetstore.controllers;
 
-import com.desmond.gadgetstore.configs.JwtService;
+import com.desmond.gadgetstore.entities.UserEntity;
 import com.desmond.gadgetstore.payload.request.AuthenticateEmailRequest;
 import com.desmond.gadgetstore.payload.request.CreateUser;
 import com.desmond.gadgetstore.payload.request.LoginRequest;
-import com.desmond.gadgetstore.payload.request.TokenRefreshRequest;
 import com.desmond.gadgetstore.payload.response.ApiResponse;
 import com.desmond.gadgetstore.payload.response.AuthResponse;
-import com.desmond.gadgetstore.payload.response.RefreshTokenResponse;
+import com.desmond.gadgetstore.payload.response.LoginResponse;
 import com.desmond.gadgetstore.payload.response.ResponseUtil;
 import com.desmond.gadgetstore.payload.response.UserResponse;
-import com.desmond.gadgetstore.repositories.RefreshTokenRepository;
-import com.desmond.gadgetstore.repositories.UserRepository;
 import com.desmond.gadgetstore.services.AuthService;
-import com.desmond.gadgetstore.services.RefreshTokenService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.net.URI;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
     private final AuthService authService;
-    private final RefreshTokenService refreshTokenService;
 
     @PostMapping("register")
     public ResponseEntity<ApiResponse<UserResponse>> register(@Valid @RequestBody CreateUser request) {
@@ -55,15 +56,19 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest loginRequest) {
-        AuthResponse authResponse = authService.login(loginRequest);
-        
-        return ResponseEntity.ok(ResponseUtil.success("User login successfully", authResponse, null));
+    public ResponseEntity<LoginResponse> login(
+    		@CookieValue(name = "access_token", required = false) String accessToken,
+            @CookieValue(name = "refresh_token", required = false) String refreshToken,
+    		@Valid @RequestBody LoginRequest loginRequest
+    		) {
+        return authService.login(loginRequest, accessToken, refreshToken);
     }
     
-    @PostMapping("/refreshtoken")
-    public ResponseEntity<ApiResponse<RefreshTokenResponse>> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
-      RefreshTokenResponse response = refreshTokenService.refreshToken(request);
-      return ResponseEntity.ok(ResponseUtil.success("User login successfully", response, null));
+    @PostMapping("refresh")
+    public ResponseEntity<LoginResponse> refreshtoken(
+    		@CookieValue(name = "refresh_token", required = true) String refreshToken
+    		) {
+    	return authService.refresh(refreshToken);
     }
+    
 }

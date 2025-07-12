@@ -41,7 +41,8 @@ public class ProductEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "productId")
     private List<PricingEntity> pricing;
     
-    private String[] otherImages;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "productId")
+    private List<ProductImageEntity> images;
     
     private String mainImage;
     
@@ -52,6 +53,8 @@ public class ProductEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     private BrandEntity brand;
+    
+    private UUID sectionId;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private CategoryEntity category;
